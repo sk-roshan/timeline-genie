@@ -2,7 +2,7 @@
 # Refactor the code based on your business logic.
 
 version: "2"
-name: "Timeline summarizer"
+name: "Timeline genie"
 description: "Answers queries and summarizes the discussions"
 
 # This is the name displayed in DevRev where the Snap-In takes actions using the token of this service account.
@@ -35,8 +35,26 @@ inputs:
 functions:
   - name: summarize
     description: Summarize your chats
+  - name: ask
+    description: Ask questions on anything
+
 commands:
   - name: ask
+    namespace: devrev
+    description: Ask questions on anything
+    surfaces:
+      - surface: discussions
+        object_types:
+          - issue
+          - ticket
+          - conversation
+          - part
+          - rev_user
+          - rev_org
+    usage_hint: "[text]"
+    function: ask
+    
+  - name: condense
     namespace: devrev
     description: Summarize the chats
     surfaces:
@@ -48,7 +66,6 @@ commands:
           - part
           - rev_user
           - rev_org
-    usage_hint: "[text]"
     function: summarize
 
 # Functions reference: https://docs.devrev.ai/snap-ins/references/functions.
