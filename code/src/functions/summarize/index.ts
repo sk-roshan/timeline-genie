@@ -17,23 +17,24 @@ async function handleEvent(event: any) {
     object: event.payload.source_id,
   };
   // get timeline data
-  // const timelineDataList = devrevSDK.timelineEntriesListPost(timelineEntriesListBody as any);
-  // console.log('Timeline entries list', JSON.stringify((await timelineDataList).data));
+  const timelineDataList = devrevSDK.timelineEntriesListPost(timelineEntriesListBody as any);
+  console.log('Timeline entries list', JSON.stringify((await timelineDataList).data));
 
   const genAI = new GoogleGenerativeAI(event.input_data.global_values.gemini_api_key);
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
   // generate response
-  const prompt = event.payload.parameters;
+  const prompt = "You are a friendly professional AI assistant, Answer to queries posted to you. If you are unsure of the answer tell you are unsure." + event.payload.parameters;
   const result = await model.generateContent([prompt]);
-  console.log(result.response.text());
+  const output = `**Input text: ${event.payload.parameters}** \n ${[result.response.text()]}`;
+  console.log(output);
 
   // add to timeline
   
   const timelineEntriesCreateBody = {
     object: object_id,
     type: 'timeline_comment',
-    body: result.response.text(),
+    body: output,
   };
 
   const response = devrevSDK.timelineEntriesCreate(timelineEntriesCreateBody as any);
